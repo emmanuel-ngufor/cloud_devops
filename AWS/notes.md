@@ -1722,3 +1722,35 @@ Infrastructure      |  Define functions and resources in                 |
 -----------------------------------------------------------------------------------------------------------------------
 
 Note: By default, lambda functions comes with a 3 seconds execution time.
+
+
+
+
+# MISSED NOTES
+
+
+
+# API Gateway
+Amazon API Gateway is a fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs.
+API Gateway enables you to connect and access data, business logic, and functionality from backend services such as workloads running on Amazon Elastic Compute Cloud (Amazon EC2), code running on AWS Lambda, any web application, or real-time communication applications.
+
+**Use Cases**
++ Commonly used in micro service architecture.
++ Mobile Backend as a service.
++ Routing traffic to backend services.
+
+**Benefits**
+1. **Centralized management**: It has centralized management for all API resources and services.
+2. **Improves security**:   Supports data encryption and can be used to authenticate access to your aws resources.
+3. **Scalable**: Serverless and can handle increased in demand and requests.
+
+**Intregrations**: Mock, Lambda, VPC link, aws services
+
+**API Gateway Endpoint types**
+* Edge optimized (default) - use
+
+##AWS API types
++ HTTP API
++ Websocket API
++ REST API (demo)
++ REST API (private)
