@@ -1754,3 +1754,190 @@ API Gateway enables you to connect and access data, business logic, and function
 + Websocket API
 + REST API (demo)
 + REST API (private)
+
+
+**Just a reminder about IAM roles**
+✅ — Stop using the Root User for daily tasks
+- Root user should ONLY be used for:
+- Changing support plan
+- Closing the AWS account
+- Viewing tax invoices
+- Editing root MFA/security settings
+- Everything else can be done using an IAM user or IAM role.
+
+
+
+# STEP FUNCTIONS
+
+# Dynamo DB
+
+# AWS Incognito
+
+
+# DATABASES
+A database is simpy a storage that helps to organize, collect and store information elctronically.
+
+**Choosing the right databases**
+- Self managed or AWS managed databases.
+- What is the read and write capacity or balanced worklaod ? Throughput needs (provisioned or on -demand)
+- Scalability or fluctuate (day or night)
+- How much information needs to be stored
+- How will the databses be accessed or data be accessed (directly, our apps, third party apps ? )
+- Latency requirements
+- Data model > How you query the data ? 
+
+
+**RDS (Relational Database Service)**
++ This is a service in AWS tha provided scalable and managed relational databases solutions.
++ It provides support for several database engines such as: **MySQL, PostGreSQL, MariaDB, Oracle and Microsoft SQL        Server, Aurora MySQL and Aurora PostGre SQL, IDM DB2**
++ It handle databses tasks like provisioning, patching, backup, recovery and scaling
++ It is a regional service
++ It supports replicas and Multi AZ
++ It supports IAM Auth and can be intergrated with secret manager
+
+**Types of RDSS**
+1. **Amazon Aurora**
+    + Fully managed and designed for cost effective and high performance.
+    + Compactible with My SQL and PostGres.
+    + Serverless
+    `use case`: 
+    - Enterprise apps, Saas, Deploying serveless apps and Going Serveless
+    
+2. **MySQL**
+    + Most popular open source relational databses management system
+
+
+
+
+
+
+# AWS INTERVIEW QUESTIONS
++ Linux
++ Bash Shell Scripting
++ Gut and GitHub
++ AWS (Security, Cost Optimization, Monitoring, Observability)
+
+
+
+
+
+# TERRAFORM
+
+## What is Infrastructure As Code
+This is a practice in modern cloud computing and DevOps that invloves managing, provisioning computing insfrastructure through machine readable configuration files rather than through manual processes or interactive config tools.
+
+This approach enables teams (developers, system admins, devOps, cloud eng) to be able to automatically monitor and provision resources using code rather than manually setting them up. With IAC, you define your infrastructure in code which can then be executed by automation tools provision and manage resources like vms, networks, storage and more...
+
+**Some examples of IAC tools**
++ Terraform
++ aws Cloudformation
++ Ansible
++ Chef and Puppet
++ Pulumi
++ Arm templates (Azure)
+
+**Benefits of IAC (Terraform)**
+1. **Automation**: Automates setup of infrastructure, reducing the potentials of human errors and increases efficiency in deploying new environments. With Terraform, you can deploy complex infrastructure in mins rather than waiting for manual configs or executions.
+2. **Consistency & Reliability**: Once IAC is define, teams can ensure consistency across development environments, testing, staging, production etc. By so doing, it reduces environment discrepancies such as "works on my machine"
+3. **Version Control**: IAC is versioned controlled, this allows teams to track changes, review history and revert to previous changes/sates if necesarry. This helps in collaboration amongst team members.
+4. **Speed & efficiency**: IAC enables rapid(fast) provisioning on env, thus makes it easy to create and destroy infrastructure.
+5. **Cost Savings or Management**: By automating Infrastructure provisioning and deprovisioning of resources, org, individuals can minimize wastage by ensuring your company or organisation only uses what they need and when they need it.
+6. **Scalability**: IAC can be scaled up and down with minimal effort as business demands increases.
+7. **Risk Management or Disaster Recovery**: IAC env can be quickly recovered and recreated in a consistent manner regardless of where they are or who built it
+8. **Intergration with CI/CD Pipelines**: Intergrates easily with continious intergration and continious delivery (CI/CD) pipelines, enabling you to automate IAC provsioning as part of the app deployment workflow.
+9. **It enhances security**: 
+
+**What is Terraform**
+Terraform is an `open-sourc`e IAC tool created by `Harshicorp`. It enables users to be able to define and provision and manage infrastructure using a high level config language knw=own as `Harshicorp Configuration Lnaguage (HCL)`. Optionally you can use `json`.
+
+**Key Features of Terraform**
+1. `Declarative Configuation`: Describe the desired state of your infrastructure (e.g creating a server, network, or storage in configuration files) and Terraform figures how to do it.
+2. `Multi Cloud Support(Cloud Agnostic)`: Supports wide variety of cloud providers like AWS, Azure, GCP and others as well as on-premises environments.
+3. `Resource Management`: Can manage wide range of resources, from Cloud infrastructure (e.g EC2 instances, S3 bucktes) to services like DNS, network and more
+4. `State Mgt`: Keep track of your infrastructure using a `state file` which is a snapshot of your current infrastructure. 
+5. `Execution Plan`: Terraform creates and execution plan for the infrastructure enviroment
+6. `Idempotency`: Ensures that running the same configuration multiple times will always result in the same infrastructure without unintended changes
+7. `Modules`: Supports resuable modules which allows you to package and resuse configurations for different environments or projects.
+8. `Workspaces`: Allows you to manage multiple instances of a given infrastructure configuration within the same backend. This is usefull for creating isolated environments like dev, stagung and prod using the same Terraform codebase.
+
+
+**Terraform Workflow or Managaing Terraform Configurations**
+This is simply terraform CLI commands
+
+- All terraform files end in `.tf`
+
+These three commands are 90% of Terraform:
+1️⃣ `terraform init`: Sets up Terraform and downloads AWS provider plugins.
+2️⃣ `terraform plan`: what will be created, changed, or deleted.
+3️⃣ `terraform apply`: Creates the resources in AWS.
+4️⃣ `terraform destroy`: Deletes everything created by Terraform
+
+
+Terraform files
+`main.tf`
+    -  The Brain of the Project
+    - main configuration file to describe what resources you wnat the cloud provider to create
+    - This is where you call resources (EC2, VPC, RDS, SGs, etc.)
+    <!-- resource "aws_instance" "my_ec2" {
+                ami           = var.ami_id
+                instance_type = var.instance_type
+            } -->
+
+`variable.tf`
+    Declare Inputs for Your Code
+    This file defines what inputs your project accepts.
+    <!-- variable "ami_id" {
+                type = string
+            } -->
+    <!-- 
+    variable "instance_type" {
+                type    = string
+                default = "t2.micro"
+            } -->
+
+`output.tf`
+    - What Terraform Should Return/Show
+    - After creating something, you may want Terraform to show results.
+    <!-- output "instance_public_ip" {
+        value = aws_instance.my_ec2.public_ip
+        } -->
+    - This prints useful info after terraform apply.
+
+`provider.tf`
+    - Optional file to specify the required cloud providers: AWS, Azure, GCP, etc
+    - Defines Cloud Provider(s)
+    - Some teams separate this from main.tf.
+
+`terraform.tfvars`
+    - Set Values for Your Variables
+    - This is where you actually give values to the variables declared in variables.tf.
+    <!-- ami_id = "ami-0abcdef123456789"
+    instance_type = "t3.micro" -->
+    This makes it easy to switch environments like:
+    `dev.tfvars` and `prod.tfvars`
+
+`backend.tf`
+     - Where Terraform Stores State, Very important for teams.
+     Sample example of an S3 backend
+     <!-- terraform {
+            backend "s3" {
+            bucket = "my-terraform-state-bucket"
+            key    = "ec2/terraform.tfstate"
+            region = "ca-central-1"
+        }
+    } -->
+This:
+    - Stores terraform.tfstate in S3
+    - Allows team collaboration
+    - Prevents corruption
+`Note: Without backend.tf, Terraform stores state locally — not safe for teams.`
+
+
+**Sample Mini Terraform Project Structure**
+terraform-ec2-demo/
+    ├── main.tf
+    ├── variables.tf
+    ├── outputs.tf
+    ├── terraform.tfvars
+    ├── provider.tf
+    └── backend.tf   (optional unless using S3 backend)
