@@ -1848,7 +1848,7 @@ This approach enables teams (developers, system admins, devOps, cloud eng) to be
 9. **It enhances security**: 
 
 **What is Terraform**
-Terraform is an `open-sourc`e IAC tool created by `Harshicorp`. It enables users to be able to define and provision and manage infrastructure using a high level config language knw=own as `Harshicorp Configuration Lnaguage (HCL)`. Optionally you can use `json`.
+Terraform is an `open-source`e IAC tool created by `Harshicorp`. It enables users to be able to define and provision and manage infrastructure using a high level config language knwown as `Harshicorp Configuration Language (HCL)`. Optionally you can use `json`.
 
 **Key Features of Terraform**
 1. `Declarative Configuation`: Describe the desired state of your infrastructure (e.g creating a server, network, or storage in configuration files) and Terraform figures how to do it.
@@ -1867,16 +1867,17 @@ This is simply terraform CLI commands
 - All terraform files end in `.tf`
 
 These three commands are 90% of Terraform:
-1️⃣ `terraform init`: Sets up Terraform and downloads AWS provider plugins.
-2️⃣ `terraform plan`: what will be created, changed, or deleted.
-3️⃣ `terraform apply`: Creates the resources in AWS.
-4️⃣ `terraform destroy`: Deletes everything created by Terraform
+1️⃣ `terraform init`: Sets up Terraform and downloads the cloud provider - AWS provider plugins.
+2️⃣ `terraform validate`: Checks for syntax and validate all configurations.
+3️⃣ `terraform plan`: what will be created, changed, or deleted.
+4️⃣ `terraform apply`: Creates the resources in AWS.
+5️⃣ `terraform destroy`: Deletes everything created by Terraform
 
 
 Terraform files
 `main.tf`
     -  The Brain of the Project
-    - main configuration file to describe what resources you wnat the cloud provider to create
+    - main configuration file to describe what resources you want the cloud provider to create
     - This is where you call resources (EC2, VPC, RDS, SGs, etc.)
     <!-- resource "aws_instance" "my_ec2" {
                 ami           = var.ami_id
@@ -1932,8 +1933,35 @@ This:
     - Prevents corruption
 `Note: Without backend.tf, Terraform stores state locally — not safe for teams.`
 
+`version.tf`: Optional
+    - `Required Version`: (version 1.3.0)
+        - Specifies the min and/or max Terraform version required.
+        - Prevents running the configuration on an unsupported version.
+        <!--
+        example
+        required_providers {
+            aws = {
+                source = "harshicorp/aws"
+                version = "~> 4.20"
+            }
+        }
+        -->
 
-**Sample Mini Terraform Project Structure**
+`data.tf`: Defines the sources that can be used to fetch or search information from providers without creating resources. When you seperate your code it helps in readability and maintainability terraform configurations. example, you might want to retrieve information about an AWS AMI (amazon machine image), DNS without making any changes to these entities or retrieve data from secrect manager or parameters
+
+
+
+# VARIABLES
+Variables are used to make configurations more flexible and reusable. Allows you to pass values that can be used throughout your configuration files.
+**Diiferent types of variables**
+    `Input Variable`: Allows users to pass in values that Terraform can use during execution, making the configuration reusable and dynamic. These variables can be provided by the user via CL args, .tfvars files, env vars and defaults within the configs itself
+    `Output Variable`: These are the prints out given via the output.tf file.
+    `Local Variables`: Local variables in Terraform are used to store intermediate or calculated values that can be reused within a module (specific configurations).
+
+    Variable types: `String, Number, bool, list, maps, objects, Turple, null, any`
+
+
+**Sample Terraform Project Structure**
 terraform-ec2-demo/
     ├── main.tf
     ├── variables.tf
@@ -1941,3 +1969,146 @@ terraform-ec2-demo/
     ├── terraform.tfvars
     ├── provider.tf
     └── backend.tf   (optional unless using S3 backend)
+
+
+**Terraform Directory Structure**
+Companies have different ways of arranging terraform project directories.
+**Root Directory (Main Configurations**)
+.
+|-- environments
+|   |-- development
+|   |   |-- main.tf
+|   |   |-- output.tf
+|   |   |-- terraform.tfvars
+|   |   `-- variables.tf
+|   |-- production
+|   |   |-- main.tf
+|   |   |-- output.tf
+|   |   |-- terraform.tfvars
+|   |   `-- variables.tf
+|   |-- shared-service
+|   |   |-- main.tf
+|   |   |-- output.tf
+|   |   |-- terraform.tfvars
+|   |   `-- variables.tf
+|   `-- staging
+|       |-- main.tf
+|       |-- output.tf
+|       |-- terraform.tfvars
+|       `-- variables.tf
+`-- modules
+    |-- alb
+    |   |-- main.tf
+    |   |-- output.tf
+    |   `-- variable.tf
+    |-- ec2
+    |   |-- main.tf
+    |   |-- output.tf
+    |   `-- variable.tf
+    |-- s3
+    |   |-- main.tf
+    |   |-- output.tf
+    |   `-- variable.tf
+    `-- vpc
+        |-- main.tf
+        |-- output.tf
+        `-- variable.tf
+
+
+**TERRAFORM MODULES**
+It is ike a container of multiple resources that are used together. Modules in terraform are used to group resources that are logically related.
+Modules can be `root module` or `child modules`
+
+You can manage modules locally or remotely
+1. `Local Management`: Modules are defined in a directory and are called and use in configurations via file paths to the module.
+2. `Remote Manamgement`: You can save the child modules into a GitHub repo or Terraform registry and you can call the odules from there.
+    <!-- Calling terraform registry module
+    module "vpc" {
+        source = "terraform-aws-modules/vpc/aws"
+        version = "2.44.0"
+    } -->
+
+    <!-- Calling GitHub module
+    module "vpc" {
+        source = "github.com/your-org/terraform-aws-vpc?ref=main"
+
+        cidr_block = "10.0.0.16/32"
+        environment = "development"
+    } -->
+
+**Importance of terraform modules**
++ Sharing and Collaborations
++ Reusability 
++ Organisation of code
++ Version Control
++ Easy to Maintain
+
+**Terrafrom Modules Best Practices**
++ Good naming conventions
++ Keep modules more focused
++ use version constraints: Specify version constraints especially when using 
++ Test modules: Test and validate modules independently to ensure they work before intergrating them in your main infrastructure.
+
+`Note`: You can target a particular module in your environment to create, update using the target command.
+for example `terraform plan --target=module.s3` && `terraform apply --target=modules.s3`
+These target specific modules within your configurations and create resources or update the resources.
+
+
+
+**TERRAFROM WORKSPACES**
+`Interview Questions`: How can you use one terraform configurations and deploy your infrastructure in different environments.
+`Answer`: Explain one of the following: `Terraform Workspaces, Use Modules, Variables`
+
+Terrafrom workspaces is a feature that allows you to manage instances of a given infrastructure configuration configuration within the same backend. Workspaces are especially useful when you want to create isolated environments like development, staging and production using the same Terraform codebase but without duplicating configuration files.
+
+Terraform workspaces allows you to use one terraform configurationwhile keeping multiple, seperate statefiles
+
+**Different Types of Workspaces**
+- **Default workspaces**: When you initialize terraform configurtions (`terraform init`), you are automatically placed in the default wokrpsace unless you decide to switch to another.
+**Terraform workspace commands**
+|**Command**                              | **Description**
+|-----------------------------------------|------------------------------------------------------------------
+| terraform workspace list                | List all existing workspaces
+| terraform workspace show                | Display current workspace
+| terraform workspace new <name>          | Creates and switchesto new workspace with the specified name.
+| terraform workspace select <name>       | Switches to an existing workspace with the specified name.
+| terraform workspace delete <name>       | Deletes the specified workspace
+| terraform destroy --auto approve =      | Destroys resources created without asking for approval.
+| terraform apply, plan                   | see above
+|-------------------------------------------------------------------------------------------------------------
+
+**Benefits of Terraform Workspaces**
++ Environment Isolation
++ Simplified Configuration
++ Flexibility ain Testing and Experimentation
++ Reduced human error
+
+
+**TERRAFROM STATE MANAGEMENT**
+A terrafrom statefile (terraform.tfstate) is a file that Terraform uses to store information about the rersources it manages. It acts as the single source of truth for Terraform's understanding of the current state of your infrastructure. The state file maps real-world resources to your to your Terraform configurations and stores meta data
+Stores sensitive Data or Information
+
+**Where to store statefiles**
+1. Locally on your local disk (terraform.tfstate)
+2. Remote State: Backend
+
++ Stored in a shared location like `AWS S3`, `Azure Blob storage`, `Google Cloud Storage` or `Terraform Cloud`
+
+**Adavantages of using a Remote Backend for your terraform statefiles**
++ Collaboration
++ Enhances Security
++ Helps in Backup and recovery
++ Centralized Managment: A remote backend provides a single, centralized location to manage and monitor state files. Simplifies infrastrutute mgt especially in environments with multiple users or env (e.g dev, prod etc)
+
+**Note**
+Though it is advantageous to have many engineers collaborate with the same statefile. it can pose a risk if they all apply changes to the terraform statefile at the same time. This can cause the staefile to be overwritten or corrupt. In order to solve this, we have to create a DynamoDB database to set `State locking`
+
++ Open Dynamo DB on aws
++ Create a Dynamo DB and give it a name
++ Partition key: The partition key is part of the table's primary key. It is a hash value that is used to retrieve items from your table and allocate data across hosts for scalability and availability.
+`Note`: The partition key must be `LockID`
++ Go to your backend.tf or backend block and add `dynamodb_table = name of table` and `encrypt` = true`
+
+
+**TERRAFORM FUNCTIONS**
+
